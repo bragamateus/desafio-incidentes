@@ -3,10 +3,12 @@ package com.example.incidentes.controller;
 
 import com.example.incidentes.domain.model.Incidente;
 import com.example.incidentes.domain.repository.IncidenteRepository;
+import com.example.incidentes.domain.service.IncidenteService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +28,7 @@ import java.util.Optional;
 public class IncidenteController {
 
     private IncidenteRepository incidenteRepository;
+    private IncidenteService incidenteService;
 
     @GetMapping
     public ResponseEntity<List<Incidente>> listar() {
@@ -47,7 +50,7 @@ public class IncidenteController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Incidente adicionar (@RequestBody Incidente incidente) {
-        return incidenteRepository.save(incidente);
+        return incidenteService.salvar(incidente);
     }
 
     @PutMapping("/{idIncident}")
@@ -58,9 +61,18 @@ public class IncidenteController {
         }
 
         incidente.setIdIncident(idIncident);
-        incidente = incidenteRepository.save(incidente);
+        incidente = incidenteService.salvar(incidente);
 
         return ResponseEntity.ok(incidente);
 
+    }
+
+    @DeleteMapping("/{idIncident}")
+    public ResponseEntity<Void> remover(@PathVariable Long idIncident) {
+        if (!incidenteRepository.existsById(idIncident)) {
+            return ResponseEntity.notFound().build();
+        }
+        incidenteService.excluir(idIncident);
+        return ResponseEntity.noContent().build();
     }
 }
