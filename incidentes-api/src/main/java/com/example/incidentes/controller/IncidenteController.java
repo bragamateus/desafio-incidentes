@@ -60,7 +60,9 @@ public class IncidenteController {
             return ResponseEntity.notFound().build();
         }
 
+
         incidente.setIdIncident(idIncident);
+        incidente.setUpdateAt(LocalDateTime.now());
         incidente = incidenteService.salvar(incidente);
 
         return ResponseEntity.ok(incidente);
